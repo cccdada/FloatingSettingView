@@ -1,5 +1,5 @@
 # FloatingSettingView
-仿网易新闻兴趣选择页面
+仿网易新闻兴趣选择页面  如果觉得有点意思的话，给个star，谢谢！
 效果如图(实际效果比gif流畅很多)：
 
 ![](https://github.com/ChaserSheng/FloatingSettingView/blob/master/FloatingSettingView/floating1.gif)
