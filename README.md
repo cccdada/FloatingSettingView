@@ -1,5 +1,9 @@
 # FloatingSettingView
 仿网易新闻兴趣选择页面
+效果如图(实际效果比gif流畅很多)：
+[!img](https://github.com/ChaserSheng/FloatingSettingView/blob/master/FloatingSettingView/floating1.gif)
+
+[!img](https://github.com/ChaserSheng/FloatingSettingView/blob/master/FloatingSettingView/floating2.gif)
 
 首先要说明的是，我的这个实现和网易的完全不一样
 
