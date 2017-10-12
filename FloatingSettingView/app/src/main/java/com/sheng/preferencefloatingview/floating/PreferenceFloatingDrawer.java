@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.dynamicweather;
+package com.sheng.preferencefloatingview.floating;
 
 import android.content.Context;
 import android.graphics.Canvas;

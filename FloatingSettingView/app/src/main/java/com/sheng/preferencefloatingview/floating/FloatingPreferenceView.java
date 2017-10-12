@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.dynamicweather;
+package com.sheng.preferencefloatingview.floating;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -13,7 +13,7 @@ import android.view.SurfaceView;
 import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
 
-import com.sheng.preferencefloatingview.dynamicweather.BaseDrawer.Type;
+import com.sheng.preferencefloatingview.floating.BaseDrawer.Type;
 
 public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder.Callback {
 

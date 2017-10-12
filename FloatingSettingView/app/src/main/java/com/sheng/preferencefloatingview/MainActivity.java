@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 
-import com.sheng.preferencefloatingview.dynamicweather.BaseDrawer;
-import com.sheng.preferencefloatingview.dynamicweather.FloatingPreferenceView;
+import com.sheng.preferencefloatingview.floating.BaseDrawer;
+import com.sheng.preferencefloatingview.floating.FloatingPreferenceView;
 
 public class MainActivity extends AppCompatActivity {
 

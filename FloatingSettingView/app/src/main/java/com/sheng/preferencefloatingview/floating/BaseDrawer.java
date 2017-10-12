@@ -1,10 +1,8 @@
-package com.sheng.preferencefloatingview.dynamicweather;
+package com.sheng.preferencefloatingview.floating;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
-
-import com.sheng.preferencefloatingview.UiUtil;
 
 import java.util.Random;
 
@@ -76,7 +74,6 @@ public abstract class BaseDrawer {
 		if(this.width != width && this.height != height){
 			this.width = width;
 			this.height = height;
-			UiUtil.logDebug(TAG, "setSize");
 			if (this.floatingDrawable != null) {
 				floatingDrawable.setBounds(0, 0, width, height);
 			}
