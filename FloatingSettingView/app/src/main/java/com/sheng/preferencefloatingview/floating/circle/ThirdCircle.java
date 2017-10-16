@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.floating;
+package com.sheng.preferencefloatingview.floating.circle;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -10,7 +10,8 @@ import android.graphics.Rect;
 import android.view.animation.BounceInterpolator;
 
 /**
- * Created by sheng
+ * 卫星圆对象
+ * @author sheng
  */
 public class ThirdCircle {
     private float cx, cy, dx, dy, radius;
@@ -24,6 +25,9 @@ public class ThirdCircle {
 
     private ThirdCircle thirdCircle;
 
+    /**
+     * 是否正在动画
+     */
     private boolean isAnim = false;
 
     public ThirdCircle(int color, String name, float rate, int selectedColor) {
@@ -149,13 +153,14 @@ public class ThirdCircle {
     }
 
     public void animClickThird(){
-        ValueAnimator animator = ValueAnimator.ofFloat(thirdCircle.getRadius()*0.7f,thirdCircle.getRadius());
+        final float rad = thirdCircle.getRadius();
+        ValueAnimator animator = ValueAnimator.ofFloat(0.7f,1f);
         animator.setDuration(200);
         animator.setInterpolator(new BounceInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
-                float radius = (float) animation.getAnimatedValue();
+                float radius = (float) animation.getAnimatedValue()*rad;
                 thirdCircle.setRadius(radius);
             }
         });

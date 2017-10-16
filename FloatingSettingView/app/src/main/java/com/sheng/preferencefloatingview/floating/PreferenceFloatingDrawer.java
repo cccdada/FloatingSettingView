@@ -4,20 +4,30 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.view.MotionEvent;
+import android.view.ViewConfiguration;
+
+import com.sheng.preferencefloatingview.floating.circle.CircleHolder;
+import com.sheng.preferencefloatingview.floating.circle.IBaseHolder;
+import com.sheng.preferencefloatingview.floating.circle.ThirdCircle;
 
 import java.util.ArrayList;
 
 /**
- * Created by sheng
+ * @author sheng
  */
-
 class PreferenceFloatingDrawer extends BaseDrawer {
     final private ArrayList<IBaseHolder> holders = new ArrayList<>();
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+    private long currentMS;
+    private float downX;
+    private float downY;
+    private float moveX;
+    private float moveY;
+
     PreferenceFloatingDrawer(Context context) {
         super(context);
-
     }
 
     @Override
@@ -143,7 +153,7 @@ class PreferenceFloatingDrawer extends BaseDrawer {
     }
 
     @Override
-    public boolean drawWeather(Canvas canvas, float alpha) {
+    public boolean drawGraphics(Canvas canvas, float alpha) {
         for (IBaseHolder holder : this.holders) {
             holder.updateAndDraw(canvas, paint);
         }
@@ -155,8 +165,83 @@ class PreferenceFloatingDrawer extends BaseDrawer {
         return FloatingBackground.WHITE;
     }
 
+    @Override
+    protected void onTouch(MotionEvent e) {
+        super.onTouch(e);
+        switch (e.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                downX = e.getX();
+                downY = e.getY();
+                moveX = 0;
+                moveY = 0;
+                currentMS = System.currentTimeMillis();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                /**
+                 * X轴距离
+                 */
+                moveX += Math.abs(e.getX() - downX);
+                /**
+                 * y轴距离
+                 */
+                moveY += Math.abs(e.getY() - downY);
+                downX = e.getX();
+                downY = e.getY();
+                break;
+            case MotionEvent.ACTION_UP:
+                /**
+                 * 移动时间
+                 */
+                long moveTime = System.currentTimeMillis() - currentMS;
+                //判断是否继续传递信号
+                if (isClick(moveTime)) {
+                    //不再执行后面的事件，在这句前可写要执行的触摸相关代码。点击事件是发生在触摸弹起后
+                    break;
+                } else {
+                    for (IBaseHolder hold : getHolders()) {
+                        if (hold instanceof CircleHolder) {
+                            CircleHolder holder = ((CircleHolder) hold);
+                            //点击位置x坐标与圆心的x坐标的距离
+                            int distanceX = (int) Math.abs(holder.isBigCircle() ? holder.curCX - downX : holder.curSmallCX - downX);
+                            //点击位置y坐标与圆心的y坐标的距离
+                            int distanceY = (int) Math.abs(holder.isBigCircle() ? holder.curCY - downY : holder.curSmallCY - downY);
+                            //点击位置与圆心的直线距离
+                            int distanceZ = (int) Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+                            //如果点击位置与圆心的距离大于圆的半径，证明点击位置没有在圆内
+                            if (distanceZ <= (holder.isBigCircle() ? holder.radius : holder.radius * holder.rate)) {
+                                holder.circleClick(!holder.isBigCircle());
+                            } else {
+                                for (ThirdCircle circle : holder.getThirdCircles()) {
+                                    int distanceTX = (int) Math.abs(circle.getCurCX() - downX);
+                                    int distanceTY = (int) Math.abs(circle.getCurCY() - downY);
+                                    int distanceTZ = (int) Math.sqrt(Math.pow(distanceTX, 2) + Math.pow(distanceTY, 2));
+                                    if (distanceTZ <= circle.getRadius()) {
+                                        circle.circleClick(!circle.isSelected());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     ArrayList<IBaseHolder> getHolders(){
         return holders;
     }
 
+    private boolean isClick(long moveTime){
+        return moveTime > ViewConfiguration.getTapTimeout() || (moveX > 20 || moveY > 20);
+    }
+
+    @Override
+    public boolean setStop(boolean stop) {
+        for (IBaseHolder holder : holders) {
+            holder.stop(stop);
+        }
+        return super.setStop(stop);
+    }
 }

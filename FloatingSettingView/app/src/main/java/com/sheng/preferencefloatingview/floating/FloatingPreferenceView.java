@@ -10,21 +10,18 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
 
 import com.sheng.preferencefloatingview.floating.BaseDrawer.Type;
 
+/**
+ * @author sheng
+ */
 public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder.Callback {
 
     static final String TAG = FloatingPreferenceView.class.getSimpleName();
     private DrawThread mDrawThread;
     private PreferenceFloatingDrawer mDrawer;
-    private long currentMS;
-    private float DownX;
-    private float DownY;
-    private float moveX;
-    private float moveY;
 
     public FloatingPreferenceView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -42,6 +39,9 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
         final SurfaceHolder surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
         surfaceHolder.setFormat(PixelFormat.RGBA_8888);
+    }
+
+    public void startFloating(){
         mDrawThread.start();
     }
 
@@ -67,7 +67,6 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
             curType = type;
             setDrawer(BaseDrawer.makeDrawerByType(getContext(), curType));
         }
-
     }
 
     @Override
@@ -117,7 +116,8 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
             preDrawer.draw(canvas, 1f - curDrawerAlpha);
         }
         if (curDrawerAlpha < 1f) {
-            curDrawerAlpha += 0.04f;
+//            curDrawerAlpha += 0.04f;
+            curDrawerAlpha =1f;
             if (curDrawerAlpha > 1) {
                 curDrawerAlpha = 1f;
                 preDrawer = null;
@@ -155,55 +155,9 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
 
     @Override
     public boolean onTouchEvent(MotionEvent e) {
-        switch (e.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                DownX = e.getX();
-                DownY = e.getY();
-                moveX = 0;
-                moveY = 0;
-                currentMS = System.currentTimeMillis();
-                break;
-            case MotionEvent.ACTION_MOVE:
-                moveX += Math.abs(e.getX() - DownX);//X轴距离
-                moveY += Math.abs(e.getY() - DownY);//y轴距离
-                DownX = e.getX();
-                DownY = e.getY();
-                break;
-            case MotionEvent.ACTION_UP:
-                long moveTime = System.currentTimeMillis() - currentMS;//移动时间
-                //判断是否继续传递信号
-                if (moveTime > ViewConfiguration.getTapTimeout() || (moveX > 20 || moveY > 20)) {
-                    //不再执行后面的事件，在这句前可写要执行的触摸相关代码。点击事件是发生在触摸弹起后
-                    break;
-                } else {
-                    for (IBaseHolder hold : mDrawer.getHolders()) {
-                        if (hold instanceof CircleHolder) {
-                            CircleHolder holder = ((CircleHolder) hold);
-                            //点击位置x坐标与圆心的x坐标的距离
-                            int distanceX = (int) Math.abs(holder.isBigCircle() ? holder.curCX - DownX : holder.curSmallCX - DownX);
-                            //点击位置y坐标与圆心的y坐标的距离
-                            int distanceY = (int) Math.abs(holder.isBigCircle() ? holder.curCY - DownY : holder.curSmallCY - DownY);
-                            //点击位置与圆心的直线距离
-                            int distanceZ = (int) Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-                            //如果点击位置与圆心的距离大于圆的半径，证明点击位置没有在圆内
-                            if (distanceZ <= (holder.isBigCircle() ? holder.radius : holder.radius * holder.rate)) {
-                                holder.circleClick(!holder.isBigCircle());
-                            } else {
-                                for (ThirdCircle circle : holder.getThirdCircles()) {
-                                    int distanceTX = (int) Math.abs(circle.getCurCX() - DownX);
-                                    int distanceTY = (int) Math.abs(circle.getCurCY() - DownY);
-                                    int distanceTZ = (int) Math.sqrt(Math.pow(distanceTX, 2) + Math.pow(distanceTY, 2));
-                                    if (distanceTZ <= circle.getRadius()) {
-                                        circle.circleClick(!circle.isSelected());
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                break;
-        }
-        return super.onTouchEvent(e);//继续执行后面的代码
+        mDrawer.onTouch(e);
+        //继续执行后面的代码
+        return super.onTouchEvent(e);
     }
 
     @Override
@@ -240,7 +194,9 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
     }
 
     private class DrawThread extends Thread {
-        // These are protected by the Thread's lock.
+        /**
+         * These are protected by the Thread's lock.
+         */
         SurfaceHolder mSurface;
         boolean mRunning;
         boolean mActive;
@@ -274,27 +230,21 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
                         notify();
                     }
                     final long startTime = AnimationUtils.currentAnimationTimeMillis();
-                    //TimingLogger logger = new TimingLogger("DrawThread");
                     // Lock the canvas for drawing.
                     Canvas canvas = mSurface.lockCanvas();
-                    //logger.addSplit("lockCanvas");
 
                     if (canvas != null) {
                         canvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
                         // Update graphics.
 
                         drawSurface(canvas);
-                        //logger.addSplit("drawSurface");
                         // All done!
                         mSurface.unlockCanvasAndPost(canvas);
-                        //logger.addSplit("unlockCanvasAndPost");
-                        //logger.dumpToLog();
                     } else {
                         Log.i(TAG, "Failure locking canvas");
                     }
                     final long drawTime = AnimationUtils.currentAnimationTimeMillis() - startTime;
                     final long needSleepTime = 16 - drawTime;
-                    //Log.i(TAG, "drawSurface drawTime->" + drawTime + " needSleepTime->" + Math.max(0, needSleepTime));// needSleepTime);
                     if (needSleepTime > 0) {
                         try {
                             Thread.sleep(needSleepTime);
@@ -308,4 +258,7 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
         }
     }
 
+    public BaseDrawer getDrawer(){
+        return mDrawer;
+    }
 }
