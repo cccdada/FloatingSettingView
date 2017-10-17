@@ -6,8 +6,12 @@
 
 ![](https://github.com/ChaserSheng/FloatingSettingView/blob/master/FloatingSettingView/floating.png)
 
-[demo](https://fir.im/7t15)
+[demo地址](https://fir.im/7t15)
 
+#### 网易的实现
+![](https://github.com/ChaserSheng/FloatingSettingView/blob/master/FloatingSettingView/wangyi.png)
+
+#### 本项目的实现
 ![](https://github.com/ChaserSheng/FloatingSettingView/blob/master/FloatingSettingView/floating2.gif)
 
 ![](https://github.com/ChaserSheng/FloatingSettingView/blob/master/FloatingSettingView/floating1.jpeg)
