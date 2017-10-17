@@ -8,8 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
 
 /**
  * 绘制小圆的旋转动画
@@ -35,7 +33,7 @@ public class RotationDrawer extends BaseSplashDrawer {
     public void startAnim(){
         // 属性动画
         mAnimator = ValueAnimator.ofFloat(0, (float) Math.PI * 10);
-        mAnimator.setDuration(1500);
+        mAnimator.setDuration(2000);
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -66,8 +64,7 @@ public class RotationDrawer extends BaseSplashDrawer {
 
             }
         });
-        mAnimator.setInterpolator(new LinearInterpolator());
-        mAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        mAnimator.setInterpolator(new FastInOutSlowInInterpolator());
         // 开始计算
         mAnimator.start();
     }
@@ -80,9 +77,9 @@ public class RotationDrawer extends BaseSplashDrawer {
             paint.setColor(mCircleColors[i]);
             // 初始角度 + 当前旋转的角度
             double angle = i * preAngle + mCurrentRotationAngle;
-            float cx = (float) (getMetricsWidth(view.getContext())/2 + 32 * Math.cos(angle));
-            float cy = (float) (getMetricsHeight(view.getContext())/2 + 32 * Math.sin(angle));
-            canvas.drawCircle(cx, cy, 8, paint);
+            float cx = (float) (getMetricsWidth(view.getContext())/2 + START_RADIUS*3 * Math.cos(angle));
+            float cy = (float) (getMetricsHeight(view.getContext())/2 + START_RADIUS*3 * Math.sin(angle));
+            canvas.drawCircle(cx, cy, START_RADIUS, paint);
         }
     }
 

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -38,7 +38,12 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
         mDrawThread = new DrawThread();
         final SurfaceHolder surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
-        surfaceHolder.setFormat(PixelFormat.RGBA_8888);
+        setZOrderOnTop(true);
+        getHolder().setFormat(PixelFormat.TRANSLUCENT);
+    }
+
+    public void setStop(boolean stop) {
+        mDrawer.setStop(stop);
     }
 
     public void startFloating(){
@@ -116,8 +121,8 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
             preDrawer.draw(canvas, 1f - curDrawerAlpha);
         }
         if (curDrawerAlpha < 1f) {
-//            curDrawerAlpha += 0.04f;
-            curDrawerAlpha =1f;
+            curDrawerAlpha += 0.04f;
+
             if (curDrawerAlpha > 1) {
                 curDrawerAlpha = 1f;
                 preDrawer = null;
@@ -167,6 +172,7 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
             mDrawThread.mSurface = holder;
             mDrawThread.notify();
         }
+
         Log.i(TAG, "surfaceCreated");
     }
 
@@ -234,7 +240,7 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
                     Canvas canvas = mSurface.lockCanvas();
 
                     if (canvas != null) {
-                        canvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+                        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
                         // Update graphics.
 
                         drawSurface(canvas);

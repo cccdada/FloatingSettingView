@@ -1,5 +1,6 @@
 package com.sheng.preferencefloatingview;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
 
 import com.sheng.preferencefloatingview.floating.BaseDrawer;
 import com.sheng.preferencefloatingview.floating.FloatingPreferenceView;
@@ -17,7 +19,7 @@ import com.sheng.preferencefloatingview.floating.circle.RotationSweepView;
 /**
  * @author sheng
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private FloatingPreferenceView floatingView;
     private RotationSweepView rotationView;
@@ -26,6 +28,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        findViewById(R.id.close).setOnClickListener(this);
+        findViewById(R.id.save).setOnClickListener(this);
 
         floatingView = (FloatingPreferenceView) findViewById(R.id.floatingView);
         ViewGroup.LayoutParams params = floatingView.getLayoutParams();
@@ -38,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
         rotationView.setOnAnimEndListener(new OnAnimEndListener() {
             @Override
             public void onAnimEnd() {
-                rotationView.setVisibility(View.GONE);
-                floatingView.getDrawer().setStop(false);
+                animStart();
+                floatingView.setStop(false);
             }
         });
         rotationView.setDistanceXYR(0,0.35f*width,0.3f*width,0.11f*width);
@@ -47,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         rotationView.setDistanceXYR(2,0.25f*width,0.57f*width,0.14f*width);
         rotationView.setDistanceXYR(3,0.68f*width,0.75f*width,0.12f*width);
         rotationView.setDistanceXYR(4,0.42f*width,0.8f*width,0.1f*width);
-        rotationView.setDistanceXYR(5,0.57f*width,0.5f*width,0.1f*width);
+        rotationView.setDistanceXYR(5,0.57f*width,0.5f*width,0.13f*width);
         rotationView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -59,6 +65,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void animStart(){
+        ValueAnimator animator = ValueAnimator.ofFloat(255,0);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                rotationView.setAlpha((Float) animation.getAnimatedValue());
+                if(((Float) animation.getAnimatedValue())==0){
+                    rotationView.setVisibility(View.GONE);
+                }
+            }
+        });
+        animator.setDuration(500);
+        animator.start();
     }
 
     @Override
@@ -83,4 +104,17 @@ public class MainActivity extends AppCompatActivity {
         return dm.widthPixels;
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.close:
+                finish();
+                break;
+            case R.id.save:
+                finish();
+                break;
+            default:
+                break;
+        }
+    }
 }

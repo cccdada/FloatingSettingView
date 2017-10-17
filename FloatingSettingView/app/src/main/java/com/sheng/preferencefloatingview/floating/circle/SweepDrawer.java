@@ -102,7 +102,7 @@ public class SweepDrawer extends BaseSplashDrawer {
             paint.setColor(p.color);
             p.x = getX(i)+p.distanceX*mCurrentRate;
             p.y = getY(i)+p.distanceY*mCurrentRate;
-            p.r = 8+p.disR*mCurrentRate;
+            p.r = START_RADIUS+p.disR*mCurrentRate;
             canvas.drawCircle(p.x, p.y, p.r, paint);
         }
     }
@@ -175,7 +175,7 @@ public class SweepDrawer extends BaseSplashDrawer {
 
         public void setDesR(float desR) {
             this.desR = desR;
-            disR = desR-8;
+            disR = desR-START_RADIUS;
         }
 
         public void setToColor(int toColor) {

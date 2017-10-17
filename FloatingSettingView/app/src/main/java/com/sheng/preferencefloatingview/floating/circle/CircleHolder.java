@@ -118,6 +118,7 @@ public class CircleHolder implements IBaseHolder {
         if (isStop) {
             curCX = cx;
             curCY = cy;
+            return;
         }else {
             float randomPercentSpeed = isBigCircle? BaseDrawer.getRandom(percentSpeed * 0.7f, percentSpeed * 1.3f):BaseDrawer.getRandom(smallPercentSpeed * 0.7f, smallPercentSpeed * 1.3f);
             if (isGrowing) {

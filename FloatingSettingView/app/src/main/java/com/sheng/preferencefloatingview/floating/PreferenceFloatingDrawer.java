@@ -162,7 +162,7 @@ class PreferenceFloatingDrawer extends BaseDrawer {
 
     @Override
     protected int[] getFloatingBackgroundGradient() {
-        return FloatingBackground.WHITE;
+        return FloatingBackground.TRANS;
     }
 
     @Override
