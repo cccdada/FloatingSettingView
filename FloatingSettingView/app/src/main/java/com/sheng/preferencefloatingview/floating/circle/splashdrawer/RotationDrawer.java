@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.floating.circle;
+package com.sheng.preferencefloatingview.floating.circle.splashdrawer;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -21,9 +21,9 @@ public class RotationDrawer extends BaseSplashDrawer {
 
     private View view;
 
-    private OnAnimEndListener listener;
+    private IOnAnimEndListener listener;
 
-    public RotationDrawer(final View view, final OnAnimEndListener listener) {
+    public RotationDrawer(final View view, final IOnAnimEndListener listener) {
         this.view = view;
         this.listener = listener;
         mCircleColors = new int[]{Color.parseColor("#FF59DABC"),Color.parseColor("#FF8BEAB4"),Color.parseColor("#FFFACD74")
@@ -64,7 +64,7 @@ public class RotationDrawer extends BaseSplashDrawer {
 
             }
         });
-        mAnimator.setInterpolator(new FastInOutSlowInInterpolator());
+        mAnimator.setInterpolator(new SlowInSlowOutInterpolator());
         // 开始计算
         mAnimator.start();
     }

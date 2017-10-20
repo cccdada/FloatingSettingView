@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.floating.circle;
+package com.sheng.preferencefloatingview.floating.circle.floatingdrawer;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
@@ -8,14 +8,17 @@ import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AnticipateOvershootInterpolator;
 
 import com.sheng.preferencefloatingview.floating.BaseDrawer;
+import com.sheng.preferencefloatingview.floating.IBaseHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 浮动的圆形小球具体的绘制 这个是浮动效果的核心类
  * @author sheng
  */
 public class CircleHolder implements IBaseHolder {
@@ -62,7 +65,7 @@ public class CircleHolder implements IBaseHolder {
     /**
      * 当前是否是大圆
      */
-    private boolean isBigCircle = true;
+    private boolean isNowBigCircle = true;
     /**
      * 小圆文字对应的矩形
      */
@@ -120,7 +123,7 @@ public class CircleHolder implements IBaseHolder {
             curCY = cy;
             return;
         }else {
-            float randomPercentSpeed = isBigCircle? BaseDrawer.getRandom(percentSpeed * 0.7f, percentSpeed * 1.3f):BaseDrawer.getRandom(smallPercentSpeed * 0.7f, smallPercentSpeed * 1.3f);
+            float randomPercentSpeed = isNowBigCircle ? BaseDrawer.getRandom(percentSpeed * 0.7f, percentSpeed * 1.3f):BaseDrawer.getRandom(smallPercentSpeed * 0.7f, smallPercentSpeed * 1.3f);
             if (isGrowing) {
                 curPercent += randomPercentSpeed;
                 if (curPercent > 1f) {
@@ -138,7 +141,7 @@ public class CircleHolder implements IBaseHolder {
             curCY = cy + dy * curPercent;
         }
 
-        if (isBigCircle) {
+        if (isNowBigCircle) {
             paint.setColor(smallColor);
             paint.setStyle(Paint.Style.STROKE);
             paint.setPathEffect(new DashPathEffect(new float[]{2, 2}, 0));
@@ -154,8 +157,45 @@ public class CircleHolder implements IBaseHolder {
             paint.setColor(smallColor);
             canvas.drawText(name, curCX - rect.width() / 2, curCY + rect.height() / 2, paint);
         }else{
-            //绘制两个背景圆圈
+            if (null==thirdCircles) {
+                return;
+            }
             paint.setColor(smallColor);
+            //斜边长度为 小圆的半径+间距+最小圆的半径
+            //已经斜边和角度
+            //角度的对边=斜边*sin角度
+            //角度邻边=斜边*cos角度
+            for (int i = 0; i < thirdCircles.size(); i++) {
+                ThirdCircle circle = thirdCircles.get(i);
+                if (!circle.isAnim()) {
+                    circle.setRadius(radius*rate*circle.getRate());
+                }
+                //斜边
+                float xieLine = circle.getRadius()+radius*rate+15;
+                //角度=弧长/半径
+                //转过的角度 l=nπr/180  n=l*180/πr
+                int dAngle = (int) ((circle.getRadius()*2+15)*i*180/(Math.PI*xieLine));
+                //卫星实际的角度
+                int realAngle = (angle-dAngle);
+
+                float duiLine = (float) (xieLine*Math.sin(realAngle*Math.PI/180));
+                float  lingLine= (float) (xieLine*Math.cos(realAngle*Math.PI/180));
+
+                circle.setXieLine(radius*rate+15);
+                circle.setRealAngle(realAngle);
+                if (!circle.isSweepAnim()) {
+                    circle.setCx(curSmallCX-lingLine);
+                    circle.setCy(curSmallCY-duiLine);
+                }
+                circle.setDx(smallDx*circle.getRate());
+                circle.setDy(smallDy*circle.getRate());
+                circle.setCurCX(circle.getCx()+circle.getDx()*curPercent);
+                circle.setCurCY(circle.getCy()+circle.getDy()*curPercent);
+                circle.draw(paint, canvas, thirdRect);
+
+            }
+
+            //绘制两个背景圆圈
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(1.5F);
             canvas.drawCircle(cx+10 + dx * curPercent*1.3f, cy+20 + dy * curPercent*1.5f, radius, paint);
@@ -173,38 +213,6 @@ public class CircleHolder implements IBaseHolder {
             paint.getTextBounds(name, 0, name.length(), smallRect);
             paint.setColor(Color.WHITE);
             canvas.drawText(name, curSmallCX - smallRect.width() / 2, curSmallCY + smallRect.height() / 2, paint);
-            if (null==thirdCircles) {
-                return;
-            }
-            //斜边长度为 小圆的半径+间距+最小圆的半径
-            //已经斜边和角度
-            //角度的对边=斜边*sin角度
-            //角度邻边=斜边*cos角度
-            for (int i = 0; i < thirdCircles.size(); i++) {
-                ThirdCircle circle = thirdCircles.get(i);
-                if (!circle.isAnim()) {
-                    circle.setRadius(smallRadius*circle.getRate());
-                }
-                //斜边
-                float xieLine = circle.getRadius()+smallRadius+15;
-                //角度=弧长/半径
-                //转过的角度 l=nπr/180  n=l*180/πr
-                int dAngle = (int) ((circle.getRadius()*2+15)*i*180/(Math.PI*xieLine));
-                //卫星实际的角度
-                int realAngle = (angle-dAngle);
-
-                float duiLine = (float) (xieLine*Math.sin(realAngle*Math.PI/180));
-                float  lingLine= (float) (xieLine*Math.cos(realAngle*Math.PI/180));
-
-
-                circle.setCx(curSmallCX-lingLine);
-                circle.setCy(curSmallCY-duiLine);
-                circle.setDx(smallDx*circle.getRate());
-                circle.setDy(smallDy*circle.getRate());
-                circle.setCurCX(circle.getCx()+circle.getDx()*curPercent);
-                circle.setCurCY(circle.getCy()+circle.getDy()*curPercent);
-                circle.draw(paint,canvas,thirdRect);
-            }
         }
     }
 
@@ -311,12 +319,16 @@ public class CircleHolder implements IBaseHolder {
         if (isAnim) {
             return;
         }
-        isBigCircle = flag;
+        isNowBigCircle = flag;
         animClick();
+        for (ThirdCircle circle:
+                thirdCircles) {
+            thirdSweepAnimStart(circle);
+        }
     }
 
-    public boolean isBigCircle(){
-        return isBigCircle;
+    public boolean isNowBigCircle(){
+        return isNowBigCircle;
     }
 
     public List<ThirdCircle> getThirdCircles() {
@@ -324,22 +336,22 @@ public class CircleHolder implements IBaseHolder {
     }
 
     /**
-     * 点击之后的动画效果 大圆缩小->小圆 小圆扩散->大圆 中间配上颜色的渐变
+     * 点击之后的动画效果 isNowBigCircle ＝ false 大圆缩小->小圆 isNowBigCircle = true 小圆扩散->大圆 中间配上颜色的渐变
      */
     private void animClick(){
         final float ra = radius;
         final int startColor = circleHolder.color;
         final int endColor = smallColor;
         final ArgbEvaluator evaluator = new ArgbEvaluator();
-        ValueAnimator animator = ValueAnimator.ofFloat(isBigCircle?rate:1,isBigCircle?1:rate);
+        ValueAnimator animator = ValueAnimator.ofFloat(isNowBigCircle ?rate:1, isNowBigCircle ?1:rate);
         animator.setDuration(300);
         animator.setInterpolator(new AnticipateOvershootInterpolator());
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float rate = (float) animation.getAnimatedValue();
-                int color = (int) evaluator.evaluate(rate,isBigCircle?endColor:startColor,isBigCircle?startColor:endColor);
-                if (isBigCircle) {
+                int color = (int) evaluator.evaluate(rate, isNowBigCircle ?endColor:startColor, isNowBigCircle ?startColor:endColor);
+                if (isNowBigCircle) {
                     circleHolder.radius = rate*ra;
                     circleHolder.color = color;
                 }else {
@@ -369,5 +381,47 @@ public class CircleHolder implements IBaseHolder {
             }
         });
         animator.start();
+    }
+
+    private void thirdSweepAnimStart(final ThirdCircle circle){
+        if (null==thirdCircles) {
+            return;
+        }
+        ValueAnimator animator = ValueAnimator.ofFloat(0, circle.getXieLine());
+        animator.setDuration(300);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float xieLine = (float) animation.getAnimatedValue();
+                float duiLine = (float) (xieLine*Math.sin(circle.getRealAngle()*Math.PI/180));
+                float  lingLine= (float) (xieLine*Math.cos(circle.getRealAngle()*Math.PI/180));
+                circle.setCx((curSmallCX-lingLine));
+                circle.setCy(curSmallCY-duiLine);
+            }
+        });
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                circle.setSweepAnim(true);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                circle.setSweepAnim(false);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.start();
+
     }
 }

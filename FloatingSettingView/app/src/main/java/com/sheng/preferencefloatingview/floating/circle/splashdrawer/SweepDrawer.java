@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.floating.circle;
+package com.sheng.preferencefloatingview.floating.circle.splashdrawer;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -22,13 +22,13 @@ public class SweepDrawer extends BaseSplashDrawer {
 
     private View view;
 
-    private OnAnimEndListener listener;
+    private IOnAnimEndListener listener;
 
     private final float START_RADIUS = 8;
 
     private int centerX,centerY;
 
-    public SweepDrawer(final View view, final OnAnimEndListener listener) {
+    public SweepDrawer(final View view, final IOnAnimEndListener listener) {
         this.view = view;
         this.listener = listener;
 

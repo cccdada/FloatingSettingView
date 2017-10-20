@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.floating.circle;
+package com.sheng.preferencefloatingview.floating.circle.splashdrawer;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
@@ -19,10 +19,10 @@ public class TransitionDrawer extends BaseSplashDrawer {
     private ArgbEvaluator evaluator;
     private View view;
 
-    private OnAnimEndListener listener;
+    private IOnAnimEndListener listener;
     private float mCurrentRate;
 
-    public TransitionDrawer(final View view, final OnAnimEndListener listener) {
+    public TransitionDrawer(final View view, final IOnAnimEndListener listener) {
         this.view = view;
         this.listener = listener;
         evaluator = new ArgbEvaluator();

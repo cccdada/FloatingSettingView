@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.floating.circle;
+package com.sheng.preferencefloatingview.floating;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;

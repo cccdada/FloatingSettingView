@@ -12,25 +12,23 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.animation.AnimationUtils;
 
-import com.sheng.preferencefloatingview.floating.BaseDrawer.Type;
-
 /**
+ * 提取公共代码封装的Drawer容器
  * @author sheng
  */
-public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder.Callback {
+public class ContainerView extends SurfaceView implements SurfaceHolder.Callback {
 
-    static final String TAG = FloatingPreferenceView.class.getSimpleName();
+    static final String TAG = ContainerView.class.getSimpleName();
     private DrawThread mDrawThread;
-    private PreferenceFloatingDrawer mDrawer;
+    private BaseDrawer mDrawer;
 
-    public FloatingPreferenceView(Context context, AttributeSet attrs) {
+    public ContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     private BaseDrawer preDrawer, curDrawer;
     private float curDrawerAlpha = 0.5f;
-    private Type curType = Type.DEFAULT;
     private int mWidth, mHeight;
 
     private void init() {
@@ -42,15 +40,19 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
         getHolder().setFormat(PixelFormat.TRANSLUCENT);
     }
 
-    public void setStop(boolean stop) {
+    /**
+     * 暂停绘制
+     * @param stop
+     */
+    public void setDrawerStop(boolean stop) {
         mDrawer.setStop(stop);
     }
 
-    public void startFloating(){
+    public void start(){
         mDrawThread.start();
     }
 
-    private void setDrawer(BaseDrawer baseDrawer) {
+    private void initDrawer(BaseDrawer baseDrawer) {
         if (baseDrawer == null) {
             return;
         }
@@ -59,18 +61,18 @@ public class FloatingPreferenceView extends SurfaceView implements SurfaceHolder
             this.preDrawer = curDrawer;
         }
         this.curDrawer = baseDrawer;
-        mDrawer = ((PreferenceFloatingDrawer) curDrawer);
+        mDrawer = curDrawer;
         updateDrawerSize(getWidth(), getHeight());
         invalidate();
     }
 
-    public void setDrawerType(Type type) {
-        if (type == null) {
+    public void setDrawer(BaseDrawer drawer) {
+        if (drawer == null) {
             return;
         }
-        if (type != curType) {
-            curType = type;
-            setDrawer(BaseDrawer.makeDrawerByType(getContext(), curType));
+        if (drawer != curDrawer) {
+            curDrawer = drawer;
+            initDrawer(drawer);
         }
     }
 

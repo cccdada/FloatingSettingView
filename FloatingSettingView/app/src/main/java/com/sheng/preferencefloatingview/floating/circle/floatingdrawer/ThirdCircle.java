@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.floating.circle;
+package com.sheng.preferencefloatingview.floating.circle.floatingdrawer;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -10,7 +10,8 @@ import android.graphics.Rect;
 import android.view.animation.BounceInterpolator;
 
 /**
- * 卫星圆对象
+ * 浮动的圆形球我们可以称之为行星，ThirdCircle我们可以称之为卫星圆
+ * 处理卫星圆球的浮动效果
  * @author sheng
  */
 public class ThirdCircle {
@@ -22,6 +23,9 @@ public class ThirdCircle {
     private float curCX, curCY;
     private boolean selected = false;
     private int selectedColor = Color.BLUE;
+    private int realAngle;
+    private float xieLine;
+    private boolean isSweepAnim = false;
 
     private ThirdCircle thirdCircle;
 
@@ -128,6 +132,30 @@ public class ThirdCircle {
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public int getRealAngle() {
+        return realAngle;
+    }
+
+    public void setRealAngle(int realAngle) {
+        this.realAngle = realAngle;
+    }
+
+    public float getXieLine() {
+        return xieLine;
+    }
+
+    public void setXieLine(float xieLine) {
+        this.xieLine = xieLine;
+    }
+
+    public boolean isSweepAnim() {
+        return isSweepAnim;
+    }
+
+    public void setSweepAnim(boolean sweepAnim) {
+        isSweepAnim = sweepAnim;
     }
 
     public void draw(Paint paint, Canvas canvas, Rect thirdRect) {

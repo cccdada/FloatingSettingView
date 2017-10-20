@@ -1,4 +1,4 @@
-package com.sheng.preferencefloatingview.floating.circle;
+package com.sheng.preferencefloatingview.floating.circle.splashdrawer;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -19,13 +19,13 @@ public class RotationSweepView extends View {
     private SweepDrawer sweepDrawer;
     private TransitionDrawer transitionDrawer;
 
-    private OnAnimEndListener onAnimEndListener;
+    private IOnAnimEndListener IOnAnimEndListener;
 
     private boolean isStartSweep = false;
     private boolean isStartTrans = false;
 
-    public void setOnAnimEndListener(OnAnimEndListener onAnimEndListener) {
-        this.onAnimEndListener = onAnimEndListener;
+    public void setIOnAnimEndListener(IOnAnimEndListener IOnAnimEndListener) {
+        this.IOnAnimEndListener = IOnAnimEndListener;
     }
 
     public RotationSweepView(Context context) {
@@ -46,7 +46,7 @@ public class RotationSweepView extends View {
     private void init(){
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        rotationDrawer = new RotationDrawer(this, new OnAnimEndListener() {
+        rotationDrawer = new RotationDrawer(this, new IOnAnimEndListener() {
             @Override
             public void onAnimEnd() {
                 sweepDrawer.startAnim();
@@ -54,7 +54,7 @@ public class RotationSweepView extends View {
             }
         });
 
-        sweepDrawer = new SweepDrawer(this, new OnAnimEndListener() {
+        sweepDrawer = new SweepDrawer(this, new IOnAnimEndListener() {
             @Override
             public void onAnimEnd() {
                 isStartTrans = true;
@@ -62,10 +62,10 @@ public class RotationSweepView extends View {
                 transitionDrawer.startAnim();
             }
         });
-        transitionDrawer = new TransitionDrawer(this, new OnAnimEndListener() {
+        transitionDrawer = new TransitionDrawer(this, new IOnAnimEndListener() {
             @Override
             public void onAnimEnd() {
-                onAnimEndListener.onAnimEnd();
+                IOnAnimEndListener.onAnimEnd();
             }
         });
     }

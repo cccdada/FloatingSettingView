@@ -10,19 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.HorizontalScrollView;
 
-import com.sheng.preferencefloatingview.floating.BaseDrawer;
-import com.sheng.preferencefloatingview.floating.FloatingPreferenceView;
-import com.sheng.preferencefloatingview.floating.circle.OnAnimEndListener;
-import com.sheng.preferencefloatingview.floating.circle.RotationSweepView;
+import com.sheng.preferencefloatingview.floating.ContainerView;
+import com.sheng.preferencefloatingview.floating.circle.floatingdrawer.PreferenceFloatingDrawer;
+import com.sheng.preferencefloatingview.floating.circle.splashdrawer.IOnAnimEndListener;
+import com.sheng.preferencefloatingview.floating.circle.splashdrawer.RotationSweepView;
 
 /**
  * @author sheng
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private FloatingPreferenceView floatingView;
+    private ContainerView containerView;
     private RotationSweepView rotationView;
+    private HorizontalScrollView scrollview;
+    private int dis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,19 +36,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.close).setOnClickListener(this);
         findViewById(R.id.save).setOnClickListener(this);
 
-        floatingView = (FloatingPreferenceView) findViewById(R.id.floatingView);
-        ViewGroup.LayoutParams params = floatingView.getLayoutParams();
+        scrollview = ((HorizontalScrollView) findViewById(R.id.scrollview));
+        containerView = (ContainerView) findViewById(R.id.floatingView);
+        ViewGroup.LayoutParams params = containerView.getLayoutParams();
         int width = params.width=getMetricsWidth(this)*7/5;
-        floatingView.setLayoutParams(params);
-        floatingView.setDrawerType(BaseDrawer.Type.CIRCLE_FLOATING);
-        floatingView.startFloating();
+        containerView.setLayoutParams(params);
+        containerView.setDrawer(new PreferenceFloatingDrawer(this));
+        containerView.start();
 
         rotationView = (RotationSweepView) findViewById(R.id.rotationView);
-        rotationView.setOnAnimEndListener(new OnAnimEndListener() {
+        rotationView.setIOnAnimEndListener(new IOnAnimEndListener() {
             @Override
             public void onAnimEnd() {
                 animStart();
-                floatingView.setStop(false);
+                containerView.setDrawerStop(false);
             }
         });
         rotationView.setDistanceXYR(0,0.35f*width,0.3f*width,0.11f*width);
@@ -85,17 +89,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        floatingView.onResume();
+        containerView.onResume();
     }
     @Override
     protected void onPause() {
         super.onPause();
-        floatingView.onPause();
+        containerView.onPause();
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        floatingView.onDestroy();
+        containerView.onDestroy();
     }
 
     public static int getMetricsWidth(Context context)

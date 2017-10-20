@@ -2,9 +2,11 @@ package com.sheng.preferencefloatingview.floating;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.GradientDrawable;
 import android.view.MotionEvent;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -13,17 +15,8 @@ import java.util.Random;
  */
 public abstract class BaseDrawer {
 
-	public enum Type {
-		/**
-		 * 默认
-		 */
-		DEFAULT,
-		/**
-		 * 圆形浮动
-		 */
-		CIRCLE_FLOATING
-	}
-
+	protected ArrayList<IBaseHolder> holders;
+	protected Paint paint;
 	/**
 	 * 暂停
 	 */
@@ -37,25 +30,15 @@ public abstract class BaseDrawer {
 
 	}
 
-	public static BaseDrawer makeDrawerByType(Context context, Type type) {
-		switch (type) {
-
-		case CIRCLE_FLOATING:
-			return new PreferenceFloatingDrawer(context);
-		case DEFAULT:
-		default:
-			return new PreferenceFloatingDrawer(context);
-		}
-	}
-
-	static final String TAG = BaseDrawer.class.getSimpleName();
 	protected Context context;
 	protected int width, height;
-	private GradientDrawable floatingDrawable;
+	private GradientDrawable gradientDrawable;
 
 	public BaseDrawer(Context context) {
 		super();
 		this.context = context;
+		this.holders = new ArrayList<>();
+		this.paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	}
 
 	public GradientDrawable makeFloatingBackground(){
@@ -63,12 +46,12 @@ public abstract class BaseDrawer {
 	}
 
 	protected void drawFloatingBackground(Canvas canvas, float alpha) {
-		if (floatingDrawable == null) {
-			floatingDrawable = makeFloatingBackground();
-			floatingDrawable.setBounds(0, 0, width, height);
+		if (gradientDrawable == null) {
+			gradientDrawable = makeFloatingBackground();
+			gradientDrawable.setBounds(0, 0, width, height);
 		}
-		floatingDrawable.setAlpha(Math.round(alpha * 255f));
-		floatingDrawable.draw(canvas);
+		gradientDrawable.setAlpha(Math.round(alpha * 255f));
+		gradientDrawable.draw(canvas);
 	}
 
 	/**
@@ -87,7 +70,22 @@ public abstract class BaseDrawer {
 	 * @param alpha 透明度
 	 * @return 是否需要绘制下一帧
 	 */
-	public abstract boolean drawGraphics(Canvas canvas, float alpha);
+	public boolean drawGraphics(Canvas canvas, float alpha){
+		for (IBaseHolder holder : this.holders) {
+			holder.updateAndDraw(canvas, paint);
+		}
+		return true;
+	}
+
+	public void addHolder(IBaseHolder holder){
+		if (holders!=null) {
+			holders.add(holder);
+		}
+	}
+
+	public ArrayList<IBaseHolder> getIHolders(){
+		return holders;
+	}
 
 	protected int[] getFloatingBackgroundGradient() {
 		return FloatingBackground.TRANS;
@@ -97,8 +95,8 @@ public abstract class BaseDrawer {
 		if(this.width != width && this.height != height){
 			this.width = width;
 			this.height = height;
-			if (this.floatingDrawable != null) {
-				floatingDrawable.setBounds(0, 0, width, height);
+			if (this.gradientDrawable != null) {
+				gradientDrawable.setBounds(0, 0, width, height);
 			}
 		}
 		
@@ -170,6 +168,9 @@ public abstract class BaseDrawer {
 
 	public boolean setStop(boolean stop) {
 		isStop = stop;
+		for (IBaseHolder holder : holders) {
+			holder.stop(stop);
+		}
 		return isStop;
 	}
 }

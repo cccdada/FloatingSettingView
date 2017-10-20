@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package com.sheng.preferencefloatingview.floating.circle;
+package com.sheng.preferencefloatingview.floating.circle.splashdrawer;
 
 
 import android.view.animation.Interpolator;
 
 /**
+ *  修改VALUES值 达到慢进慢出的动画效果
  *  @author sheng
  */
-public class FastInOutSlowInInterpolator implements Interpolator {
+public class SlowInSlowOutInterpolator implements Interpolator {
 
     /**
      * Lookup table values sampled with x at regular intervals between 0 and 1 for a total of
@@ -76,7 +77,7 @@ public class FastInOutSlowInInterpolator implements Interpolator {
     private final float[] mValues;
     private final float mStepSize;
 
-    public FastInOutSlowInInterpolator() {
+    public SlowInSlowOutInterpolator() {
         mValues = VALUES;
         mStepSize = 1f / (mValues.length - 1);
     }
