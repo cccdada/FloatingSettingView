@@ -45,16 +45,15 @@
     </RelativeLayout>
 
     <HorizontalScrollView
+        android:id="@+id/scrollView"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:scrollbars="none">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
 
-            <com.sheng.preferencefloatingview.floating.FloatingPreferenceView
+            <com.sheng.preferencefloatingview.floating.ContainerView
                 android:id="@+id/floatingView"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -89,7 +88,7 @@
             android:text="保存修改" />
     </RelativeLayout>
 
-    <com.sheng.preferencefloatingview.floating.circle.RotationSweepView
+    <com.sheng.preferencefloatingview.floating.circle.splashdrawer.RotationSweepView
         android:id="@+id/rotationView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -1,16 +1,15 @@
 package com.sheng.preferencefloatingview;
 
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
-import android.widget.HorizontalScrollView;
 
 import com.sheng.preferencefloatingview.floating.ContainerView;
 import com.sheng.preferencefloatingview.floating.circle.floatingdrawer.PreferenceFloatingDrawer;
@@ -20,12 +19,10 @@ import com.sheng.preferencefloatingview.floating.circle.splashdrawer.RotationSwe
 /**
  * @author sheng
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends Activity implements View.OnClickListener{
 
     private ContainerView containerView;
     private RotationSweepView rotationView;
-    private HorizontalScrollView scrollview;
-    private int dis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,20 +33,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.close).setOnClickListener(this);
         findViewById(R.id.save).setOnClickListener(this);
 
-        scrollview = ((HorizontalScrollView) findViewById(R.id.scrollview));
         containerView = (ContainerView) findViewById(R.id.floatingView);
         ViewGroup.LayoutParams params = containerView.getLayoutParams();
         int width = params.width=getMetricsWidth(this)*7/5;
         containerView.setLayoutParams(params);
         containerView.setDrawer(new PreferenceFloatingDrawer(this));
-        containerView.start();
 
         rotationView = (RotationSweepView) findViewById(R.id.rotationView);
         rotationView.setIOnAnimEndListener(new IOnAnimEndListener() {
             @Override
             public void onAnimEnd() {
                 animStart();
-                containerView.setDrawerStop(false);
             }
         });
         rotationView.setDistanceXYR(0,0.35f*width,0.3f*width,0.11f*width);
@@ -67,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     rotationView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
+                containerView.start();
             }
         });
     }
@@ -79,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 rotationView.setAlpha((Float) animation.getAnimatedValue());
                 if(((Float) animation.getAnimatedValue())==0){
                     rotationView.setVisibility(View.GONE);
+                    containerView.setDrawerStop(false);
                 }
             }
         });

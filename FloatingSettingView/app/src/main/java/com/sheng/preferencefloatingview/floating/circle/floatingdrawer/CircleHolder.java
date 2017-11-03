@@ -19,6 +19,10 @@ import java.util.List;
 
 /**
  * 浮动的圆形小球具体的绘制 这个是浮动效果的核心类
+ *
+ * TODO 浮动效果优化：现在的效果是在一条直线上来回运动，需要优化成在一定范围内运动，在边界弹向其它方向
+ * H5效果类似 http://blog.csdn.net/chen_gong1992/article/details/53313383
+ * 读者可以将js关键代码翻译成java
  * @author sheng
  */
 public class CircleHolder implements IBaseHolder {
@@ -161,6 +165,13 @@ public class CircleHolder implements IBaseHolder {
                 return;
             }
             paint.setColor(smallColor);
+            //绘制两个背景圆圈
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(1.5F);
+            canvas.drawCircle(cx+10 + dx * curPercent*1.3f, cy+20 + dy * curPercent*1.5f, radius, paint);
+            canvas.drawCircle(cx+20 + dx * curPercent*1.4f, cy+10 + dy * curPercent*1.1f, radius, paint);
+            paint.setStyle(Paint.Style.FILL);
+
             //斜边长度为 小圆的半径+间距+最小圆的半径
             //已经斜边和角度
             //角度的对边=斜边*sin角度
@@ -194,13 +205,6 @@ public class CircleHolder implements IBaseHolder {
                 circle.draw(paint, canvas, thirdRect);
 
             }
-
-            //绘制两个背景圆圈
-            paint.setStyle(Paint.Style.STROKE);
-            paint.setStrokeWidth(1.5F);
-            canvas.drawCircle(cx+10 + dx * curPercent*1.3f, cy+20 + dy * curPercent*1.5f, radius, paint);
-            canvas.drawCircle(cx+20 + dx * curPercent*1.4f, cy+10 + dy * curPercent*1.1f, radius, paint);
-            paint.setStyle(Paint.Style.FILL);
 
             //当前小圆的坐标
             curSmallCX = smallCx + smallDx * curPercent;
@@ -422,6 +426,6 @@ public class CircleHolder implements IBaseHolder {
             }
         });
         animator.start();
-
     }
+
 }

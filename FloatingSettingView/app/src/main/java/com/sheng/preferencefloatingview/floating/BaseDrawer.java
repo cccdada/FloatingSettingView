@@ -25,9 +25,6 @@ public abstract class BaseDrawer {
 	public static final class FloatingBackground {
 		public static final int[] WHITE = new int[] { 0xFFFFFFFF, 0xFFFFFFFF };
 		public static final int[] TRANS = new int[] { 0x00000000, 0x00000000 };
-
-		public static final int[] CLEAR_D = new int[] { 0xff3d99c2, 0xff4f9ec5 };
-
 	}
 
 	protected Context context;

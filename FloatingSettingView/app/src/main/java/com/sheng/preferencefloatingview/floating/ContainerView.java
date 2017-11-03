@@ -24,20 +24,21 @@ public class ContainerView extends SurfaceView implements SurfaceHolder.Callback
 
     public ContainerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init();
+        init(context);
     }
 
     private BaseDrawer preDrawer, curDrawer;
     private float curDrawerAlpha = 0.5f;
     private int mWidth, mHeight;
 
-    private void init() {
+    private void init(Context context) {
         curDrawerAlpha = 0f;
         mDrawThread = new DrawThread();
         final SurfaceHolder surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
         setZOrderOnTop(true);
         getHolder().setFormat(PixelFormat.TRANSLUCENT);
+
     }
 
     /**
@@ -84,7 +85,7 @@ public class ContainerView extends SurfaceView implements SurfaceHolder.Callback
         mHeight = h;
     }
 
-    private void updateDrawerSize(int w, int h) {
+    public void updateDrawerSize(int w, int h) {
         if (w == 0 || h == 0) {
             return;
         }// 必须加锁，因为在DrawThread.drawSurface的时候调用的是各种Drawer的绘制方法
@@ -269,4 +270,5 @@ public class ContainerView extends SurfaceView implements SurfaceHolder.Callback
     public BaseDrawer getDrawer(){
         return mDrawer;
     }
+
 }
